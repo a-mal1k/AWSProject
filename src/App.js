@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import { API } from 'aws-amplify';
 import { withAuthenticator, AmplifySignOut } from '@aws-amplify/ui-react';
-import { listNotes } from './graphql/queries';
+import { listTodos } from './graphql/queries';
 import {
-  createNote as createNoteMutation,
-  deleteNote as deleteNoteMutation,
+  createTodo as createNoteMutation,
+  deleteTodo as deleteNoteMutation,
 } from './graphql/mutations';
 
 const initialFormState = { name: '', description: '' };
@@ -19,8 +19,8 @@ function App() {
   }, []);
 
   async function fetchNotes() {
-    const apiData = await API.graphql({ query: listNotes });
-    setNotes(apiData.data.listNotes.items);
+    const apiData = await API.graphql({ query: listTodos });
+    setNotes(apiData.data.listTodos.items);
   }
 
   async function createNote() {
