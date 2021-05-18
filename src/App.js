@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import { API, Storage } from 'aws-amplify';
-import { withAuthenticator, AmplifySignOut } from '@aws-amplify/ui-react';
+import { withAuthenticator } from '@aws-amplify/ui-react';
 import { listTodos } from './graphql/queries';
 import {
   createTodo as createNoteMutation,
   deleteTodo as deleteNoteMutation,
 } from './graphql/mutations';
+import Header from '.components/Header';
 
 const initialFormState = { name: '', description: '' };
 
@@ -64,7 +65,7 @@ function App() {
 
   return (
     <div className='App'>
-      <h1>My Notes</h1>
+      <Header />
       <input
         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
         placeholder='Note name'
@@ -89,7 +90,6 @@ function App() {
           </div>
         ))}
       </div>
-      <AmplifySignOut />
     </div>
   );
 }
