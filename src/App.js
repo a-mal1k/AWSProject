@@ -7,7 +7,7 @@ import {
   createTodo as createNoteMutation,
   deleteTodo as deleteNoteMutation,
 } from './graphql/mutations';
-import Header from '.components/Header';
+import Header from './components/Header';
 
 const initialFormState = { name: '', description: '' };
 
