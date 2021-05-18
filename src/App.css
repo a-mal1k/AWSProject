@@ -27,6 +27,35 @@
 .App-link {
   color: #61dafb;
 }
+.head {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  background-color: #2a7886;
+  padding: 8px 32px;
+  box-shadow: 0 0 10px 0 #3e8d96;
+  color: aliceblue;
+}
+.head ul {
+  display: flex;
+  justify-content: flex-end;
+  list-style: none;
+  text-decoration: none;
+  padding-top: 10px;
+}
+.head a {
+  color: #fff;
+  padding: 0.45rem;
+  margin: 0 0.2rem;
+}
+.head h1 > a:hover {
+  color: black;
+  text-decoration: none;
+}
+.head li > a:hover {
+  color: black;
+  text-decoration: none;
+}
 
 @keyframes App-logo-spin {
   from {
