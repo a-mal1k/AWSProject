@@ -2,14 +2,18 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import { API, Storage } from 'aws-amplify';
 import { withAuthenticator } from '@aws-amplify/ui-react';
-import { listTodos } from './graphql/queries';
+import { listNotes } from './graphql/queries';
+import PostAddIcon from '@material-ui/icons/PostAdd';
+import Fab from '@material-ui/core/Fab';
+import Zoom from '@material-ui/core/Zoom';
 import {
-  createTodo as createNoteMutation,
-  deleteTodo as deleteNoteMutation,
+  createNote as createNoteMutation,
+  deleteNote as deleteNoteMutation,
 } from './graphql/mutations';
 import Header from './components/Header';
+import Note from './components/Note';
 
-const initialFormState = { name: '', description: '' };
+const initialFormState = { title: '', content: '' };
 
 function App() {
   const [notes, setNotes] = useState([]);
@@ -20,8 +24,8 @@ function App() {
   }, []);
 
   async function fetchNotes() {
-    const apiData = await API.graphql({ query: listTodos });
-    const notesFromAPI = apiData.data.listTodos.items;
+    const apiData = await API.graphql({ query: listNotes });
+    const notesFromAPI = apiData.data.listNotes.items;
     await Promise.all(
       notesFromAPI.map(async (note) => {
         if (note.image) {
@@ -31,29 +35,24 @@ function App() {
         return note;
       })
     );
-    setNotes(apiData.data.listTodos.items);
+    setNotes(apiData.data.listNotes.items);
   }
-  async function onChange(e) {
-    if (!e.target.files[0]) return;
-    const file = e.target.files[0];
-    setFormData({ ...formData, image: file.name });
-    await Storage.put(file.name, file);
-    fetchNotes();
+
+  function addNote(newNote) {
+    setNotes((prevItems) => {
+      return [...prevItems, newNote];
+    });
   }
-  async function createNote() {
-    if (!formData.name || !formData.description) return;
+  async function submitNote(event) {
+    addNote(note);
+    if (!formData.title || !formData.content) return;
     await API.graphql({
       query: createNoteMutation,
       variables: { input: formData },
     });
-    if (formData.image) {
-      const image = await Storage.get(formData.image);
-      formData.image = image;
-    }
-    setNotes([...notes, formData]);
-    setFormData(initialFormState);
+    setNote(initialFormState);
+    event.preventDefault();
   }
-
   async function deleteNote({ id }) {
     const newNotesArray = notes.filter((note) => note.id !== id);
     setNotes(newNotesArray);
@@ -62,34 +61,57 @@ function App() {
       variables: { input: { id } },
     });
   }
+  function handleChange(event) {
+    const { name, value } = event.target;
 
+    setNote((prevNote) => {
+      return {
+        ...prevNote,
+        [name]: value,
+      };
+    });
+  }
+  function expand() {
+    setExpanded(true);
+  }
   return (
     <div className='App'>
       <Header />
-      <input
-        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-        placeholder='Note name'
-        value={formData.name}
-      />
-      <input
-        onChange={(e) =>
-          setFormData({ ...formData, description: e.target.value })
-        }
-        placeholder='Note description'
-        value={formData.description}
-      />
-      <input type='file' onChange={onChange} />
-      <button onClick={createNote}>Create Note</button>
-      <div style={{ marginBottom: 30 }}>
-        {notes.map((note) => (
-          <div key={note.id || note.name}>
-            <h2>{note.name}</h2>
-            <p>{note.description}</p>
-            <button onClick={() => deleteNote(note)}>Delete note</button>
-            {note.image && <img src={note.image} style={{ width: 400 }} />}
-          </div>
-        ))}
-      </div>
+      <form className='create-note'>
+        {isexpanded && (
+          <input
+            name='title'
+            onChange={handleChange}
+            value={note.title}
+            placeholder='Title'
+          />
+        )}
+
+        <textarea
+          name='content'
+          onClick={expand}
+          onChange={handleChange}
+          value={note.content}
+          placeholder='Take a note...'
+          rows={isexpanded ? 3 : 1}
+        />
+        <Zoom in={isexpanded}>
+          <Fab onClick={submitNote}>
+            <PostAddIcon />
+          </Fab>
+        </Zoom>
+      </form>
+      {notes.map((noteItem, index) => {
+        return (
+          <Note
+            key={index}
+            id={index}
+            title={noteItem.title}
+            content={noteItem.content}
+            onDelete={deleteNote}
+          />
+        );
+      })}
     </div>
   );
 }
