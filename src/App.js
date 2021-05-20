@@ -30,7 +30,6 @@ function App() {
   }
 
   async function submitNote(event) {
-    if (!formData.title || !formData.content) return;
     await API.graphql({
       query: createNoteMutation,
       variables: { input: formData },
