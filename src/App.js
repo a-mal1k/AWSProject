@@ -26,33 +26,18 @@ function App() {
 
   async function fetchNotes() {
     const apiData = await API.graphql({ query: listNotes });
-    const notesFromAPI = apiData.data.listNotes.items;
-    await Promise.all(
-      notesFromAPI.map(async (note) => {
-        if (note.image) {
-          const image = await Storage.get(note.image);
-          note.image = image;
-        }
-        return note;
-      })
-    );
     setNotes(apiData.data.listNotes.items);
   }
 
-  function addNote(newNote) {
-    setNotes((prevItems) => {
-      return [...prevItems, newNote];
-    });
-  }
   async function submitNote(event) {
-    addNote(formData);
     if (!formData.title || !formData.content) return;
     await API.graphql({
       query: createNoteMutation,
       variables: { input: formData },
     });
-    event.preventDefault();
+    setNotes([...notes, formData]);
     setFormData(initialFormState);
+    event.preventDefault();
   }
   async function deleteNote({ id }) {
     const newNotesArray = notes.filter((note) => note.id !== id);
