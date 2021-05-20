@@ -25,7 +25,7 @@ function App() {
   }, []);
 
   function fetchNotes() {
-    const apiData = await API.graphql({ query: listNotes });
+    const apiData = API.graphql({ query: listNotes });
     const notesFromAPI = apiData.data.listNotes.items;
     setNotes(apiData.data.listNotes.items);
   }
