@@ -63,6 +63,7 @@ body {
   color: #fff;
   padding: 0.45rem;
   margin: 0 0.2rem;
+  text-decoration: none;
 }
 .head h1 > a:hover {
   color: black;

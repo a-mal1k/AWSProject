@@ -51,8 +51,8 @@ function App() {
       query: createNoteMutation,
       variables: { input: formData },
     });
-    setFormData(initialFormState);
     event.preventDefault();
+    setFormData(initialFormState);
   }
   async function deleteNote({ id }) {
     const newNotesArray = notes.filter((note) => note.id !== id);
@@ -60,16 +60,6 @@ function App() {
     await API.graphql({
       query: deleteNoteMutation,
       variables: { input: { id } },
-    });
-  }
-  function handleChange(event) {
-    const { name, value } = event.target;
-
-    setFormData((prevNote) => {
-      return {
-        ...prevNote,
-        [name]: value,
-      };
     });
   }
   function expand() {
@@ -82,7 +72,9 @@ function App() {
         {isexpanded && (
           <input
             name='title'
-            onChange={handleChange}
+            onChange={(e) =>
+              setFormData({ ...formData, title: e.target.value })
+            }
             value={formData.title}
             placeholder='Title'
           />
@@ -91,7 +83,9 @@ function App() {
         <textarea
           name='content'
           onClick={expand}
-          onChange={handleChange}
+          onChange={(e) =>
+            setFormData({ ...formData, content: e.target.value })
+          }
           value={formData.content}
           placeholder='Take a note...'
           rows={isexpanded ? 3 : 1}
