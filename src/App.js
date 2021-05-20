@@ -16,6 +16,7 @@ import Note from './components/Note';
 const initialFormState = { title: '', content: '' };
 
 function App() {
+  const [isexpanded, setExpanded] = useState(false);
   const [notes, setNotes] = useState([]);
   const [formData, setFormData] = useState(initialFormState);
 
@@ -44,13 +45,13 @@ function App() {
     });
   }
   async function submitNote(event) {
-    addNote(note);
+    addNote(formData);
     if (!formData.title || !formData.content) return;
     await API.graphql({
       query: createNoteMutation,
       variables: { input: formData },
     });
-    setNote(initialFormState);
+    setFormData(initialFormState);
     event.preventDefault();
   }
   async function deleteNote({ id }) {
@@ -64,7 +65,7 @@ function App() {
   function handleChange(event) {
     const { name, value } = event.target;
 
-    setNote((prevNote) => {
+    setFormData((prevNote) => {
       return {
         ...prevNote,
         [name]: value,
@@ -82,7 +83,7 @@ function App() {
           <input
             name='title'
             onChange={handleChange}
-            value={note.title}
+            value={formData.title}
             placeholder='Title'
           />
         )}
@@ -91,7 +92,7 @@ function App() {
           name='content'
           onClick={expand}
           onChange={handleChange}
-          value={note.content}
+          value={formData.content}
           placeholder='Take a note...'
           rows={isexpanded ? 3 : 1}
         />
